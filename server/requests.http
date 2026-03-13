@@ -1,0 +1,120 @@
+@baseUrl = http://localhost:8001/api/v1
+@email = julie.test+1@mail.com
+@password = Abcdefghij1!
+
+@eventId = db0a7d2b-fb22-4485-8d5c-6c225f5d5505
+
+# ⬇️ Après LOGIN (si requires2fa=true), colle ici le pendingToken renvoyé
+@pendingToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YWJlMzIyNy03MzA1LTRlZDctODFiNC04NWUxYzg3OTdhMjgiLCJwdXJwb3NlIjoiMmZhX3BlbmRpbmciLCJpYXQiOjE3NzA5MzY2NTYsImV4cCI6MTc3MDkzNjk1Nn0.Du_5SF0LGC0-xqBaULXZ33VATmhoSYFDoHAjQhvJ3qc
+
+# ⬇️ Après VERIFY 2FA (ou BACKUP), colle ici l'accessToken renvoyé
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YWJlMzIyNy03MzA1LTRlZDctODFiNC04NWUxYzg3OTdhMjgiLCJwdXJwb3NlIjoiYWNjZXNzIiwiaWF0IjoxNzcwOTM2MDY3LCJleHAiOjE3NzA5Mzk2Njd9.swqy3N7PVujwQKU9TWoS_xT9To_1-dsz8qAK6Gapr9s
+
+
+### =========================
+### AUTH
+### =========================
+
+### REGISTER
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Julie",
+  "lastname": "Truc-Vallet",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+### LOGIN
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+### =========================
+### 2FA
+### =========================
+
+### INIT 2FA
+POST {{baseUrl}}/auth/2fa/init
+Content-Type: application/json
+
+{
+  "userId": "7abe3227-7305-4ed7-81b4-85e1c8797a28"
+}
+
+
+### CONFIRM 2FA
+POST {{baseUrl}}/auth/2fa/confirm
+Content-Type: application/json
+
+{
+  "userId": "7abe3227-7305-4ed7-81b4-85e1c8797a28",
+  "token": "495918"
+}
+
+
+### VERIFY 2FA
+POST {{baseUrl}}/auth/2fa/verify
+Content-Type: application/json
+
+{
+  "pendingToken": "{{pendingToken}}",
+  "token": "388738"
+}
+
+
+### BACKUP CODE
+POST {{baseUrl}}/auth/2fa/backup
+Content-Type: application/json
+
+{
+  "pendingToken": "{{pendingToken}}",
+  "code": "a1ac5b35-70d7-4fa1-9da8-057470a89a1a"
+}
+
+
+### DISABLE 2FA
+DELETE {{baseUrl}}/auth/2fa
+Content-Type: application/json
+
+{
+  "userId": "7abe3227-7305-4ed7-81b4-85e1c8797a28"
+}
+
+
+### =========================
+### USERS (JWT protected)
+### =========================
+
+### UPDATE
+PUT {{baseUrl}}/users/me
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "firstname": "Julie",
+  "lastname": "TV",
+  "email": "{{email}}"
+}
+
+
+### =========================
+### EVENTS
+### =========================
+
+### UPDATE EVENT
+PUT {{baseUrl}}/events/{{eventId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "Event UPDATED",
+  "price": 30
+}
