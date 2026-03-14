@@ -6,7 +6,6 @@ type LoginApiData =
   | { requires2fa: true; pendingToken: string; user: { email: string } }
   | {
       requires2fa: false;
-      accessToken: string;
       user: {
         id: string;
         firstname: string;
@@ -35,12 +34,10 @@ export type Confirm2faApiData = {
 
 export type Verify2faApiData = {
   ok: true;
-  accessToken: string;
 };
 
 export type Backup2faApiData = {
   ok: true;
-  accessToken: string;
 };
 
 export type Disable2faApiData = {
@@ -66,16 +63,12 @@ export interface IUserService {
 export class UserService implements IUserService {
   private baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8001/api/v1";
 
-  private getAuthHeader(): Record<string, string> {
-    const token = localStorage.getItem("accessToken");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
   async login(payload: { email: string; password: string }): Promise<ApiResult<LoginApiData>> {
     try {
       const res = await fetch(`${this.baseUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -96,6 +89,7 @@ export class UserService implements IUserService {
       const res = await fetch(`${this.baseUrl}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -117,8 +111,8 @@ export class UserService implements IUserService {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          ...this.getAuthHeader(),
         },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -141,8 +135,8 @@ export class UserService implements IUserService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...this.getAuthHeader(),
         },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -164,8 +158,8 @@ export class UserService implements IUserService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...this.getAuthHeader(),
         },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -186,6 +180,7 @@ export class UserService implements IUserService {
       const res = await fetch(`${this.baseUrl}/auth/2fa/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -206,6 +201,7 @@ export class UserService implements IUserService {
       const res = await fetch(`${this.baseUrl}/auth/2fa/backup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -227,8 +223,8 @@ export class UserService implements IUserService {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          ...this.getAuthHeader(),
         },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -250,8 +246,8 @@ export class UserService implements IUserService {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          ...this.getAuthHeader(),
         },
+        credentials: "include",
       });
 
       const json = await res.json();

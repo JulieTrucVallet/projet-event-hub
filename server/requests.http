@@ -4,10 +4,8 @@
 
 @eventId = db0a7d2b-fb22-4485-8d5c-6c225f5d5505
 
-# ⬇️ Après LOGIN (si requires2fa=true), colle ici le pendingToken renvoyé
 @pendingToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YWJlMzIyNy03MzA1LTRlZDctODFiNC04NWUxYzg3OTdhMjgiLCJwdXJwb3NlIjoiMmZhX3BlbmRpbmciLCJpYXQiOjE3NzA5MzY2NTYsImV4cCI6MTc3MDkzNjk1Nn0.Du_5SF0LGC0-xqBaULXZ33VATmhoSYFDoHAjQhvJ3qc
 
-# ⬇️ Après VERIFY 2FA (ou BACKUP), colle ici l'accessToken renvoyé
 @accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YWJlMzIyNy03MzA1LTRlZDctODFiNC04NWUxYzg3OTdhMjgiLCJwdXJwb3NlIjoiYWNjZXNzIiwiaWF0IjoxNzcwOTM2MDY3LCJleHAiOjE3NzA5Mzk2Njd9.swqy3N7PVujwQKU9TWoS_xT9To_1-dsz8qAK6Gapr9s
 
 
@@ -118,3 +116,16 @@ Authorization: Bearer {{accessToken}}
   "title": "Event UPDATED",
   "price": 30
 }
+
+### =========================
+### DASHBOARD
+### =========================
+
+### GET DASHBOARD STATS
+GET {{baseUrl}}/dashboard
+Content-Type: application/json
+
+
+### GET EVENTS PAGINATED
+GET {{baseUrl}}/events?page=1&limit=5
+Content-Type: application/json

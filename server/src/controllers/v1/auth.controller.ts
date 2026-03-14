@@ -18,6 +18,15 @@ import {
   verifyPending2faToken,
 } from "../../utility/jwt.js";
 
+function setAccessTokenCookie(res: Response, token: string) {
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+}
+
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const repository = new UserRepositoryPrisma();
@@ -53,10 +62,10 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     const accessToken = signAccessToken(result.user.id);
+    setAccessTokenCookie(res, accessToken);
 
     return res.jsonSuccess({
       requires2fa: false,
-      accessToken,
       user: result.user,
     });
   } catch (error: any) {
@@ -120,7 +129,9 @@ export const verify2fa = async (req: Request, res: Response, next: NextFunction)
     if (!result?.ok) return res.jsonError("CONNECTION_2AF_INVALID", 401);
 
     const accessToken = signAccessToken(userId);
-    return res.jsonSuccess({ ok: true, accessToken });
+    setAccessTokenCookie(res, accessToken);
+
+    return res.jsonSuccess({ ok: true });
   } catch (e) {
     next(e);
   }
@@ -143,7 +154,9 @@ export const backup2fa = async (req: Request, res: Response, next: NextFunction)
     if (!result?.ok) return res.jsonError("CONNECTION_2AF_INVALID", 401);
 
     const accessToken = signAccessToken(userId);
-    return res.jsonSuccess({ ok: true, accessToken });
+    setAccessTokenCookie(res, accessToken);
+
+    return res.jsonSuccess({ ok: true });
   } catch (e) {
     next(e);
   }

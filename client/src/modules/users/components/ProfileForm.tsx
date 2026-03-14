@@ -68,7 +68,6 @@ export const ProfileForm: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
     localStorage.removeItem("pendingToken");
     localStorage.removeItem("user");
     navigate("/login", { replace: true });

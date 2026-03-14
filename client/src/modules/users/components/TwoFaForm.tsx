@@ -1,14 +1,14 @@
 import {
-    Alert,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Link,
-    TextField,
-    Typography,
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Link,
+  TextField,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -59,15 +59,12 @@ export const TwoFaForm: React.FC = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem("accessToken");
     localStorage.removeItem("pendingToken");
     localStorage.removeItem("user");
     navigate("/login", { replace: true });
   };
 
-  const goToProfileAfterToken = async (accessToken: string) => {
-    localStorage.setItem("accessToken", accessToken);
-
+  const goToProfile = async () => {
     const me = await userService.getMe();
     if (!me.ok) {
       setError(me.message);
@@ -75,7 +72,6 @@ export const TwoFaForm: React.FC = () => {
     }
 
     localStorage.removeItem("pendingToken");
-
     navigate("/me", { replace: true });
   };
 
@@ -106,7 +102,7 @@ export const TwoFaForm: React.FC = () => {
         return;
       }
 
-      await goToProfileAfterToken(result.data.accessToken);
+      await goToProfile();
     } catch (e: any) {
       setError(e?.message ?? "Erreur lors de la vérification 2FA.");
     } finally {
@@ -144,7 +140,7 @@ export const TwoFaForm: React.FC = () => {
       setOpenBackup(false);
       setBackupCode("");
 
-      await goToProfileAfterToken(result.data.accessToken);
+      await goToProfile();
     } catch (e: any) {
       setError(e?.message ?? "Erreur lors de la connexion via code de secours.");
     } finally {

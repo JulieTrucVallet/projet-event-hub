@@ -13,14 +13,11 @@ export const LoginForm: React.FC = () => {
   useEffect(() => {
     if (presenter.is2faPending && presenter.pendingToken) {
       localStorage.setItem("pendingToken", presenter.pendingToken);
-
       navigate("/2fa", { replace: true });
       return;
     }
 
-    if (presenter.isLoggedIn && presenter.accessToken) {
-      localStorage.setItem("accessToken", presenter.accessToken);
-
+    if (presenter.isLoggedIn) {
       if (presenter.user) {
         localStorage.setItem("user", JSON.stringify(presenter.user));
       }
@@ -31,7 +28,6 @@ export const LoginForm: React.FC = () => {
     presenter.is2faPending,
     presenter.pendingToken,
     presenter.isLoggedIn,
-    presenter.accessToken,
     presenter.user,
     navigate,
   ]);

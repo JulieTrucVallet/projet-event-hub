@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import { CreateEventUseCase } from "../../application/usecases/create-event.usecase";
 import { DeleteEventUseCase } from "../../application/usecases/delete-event.usecase";
 import { GetEventByIdUseCase } from "../../application/usecases/get-event-by-id.usecase";
-import { ListEventsUseCase } from "../../application/usecases/list-events.usecase";
 import { UpdateEventUseCase } from "../../application/usecases/update-event.usecase";
 import { EventRepositoryPrisma } from "../../infrastructure/repositories/event-repository.prisma";
 
@@ -24,21 +23,26 @@ export const createEvent = async (
 };
 
 export const getEvents = async (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<any> => {
-  try {
-    const repository = new EventRepositoryPrisma();
-    const usecase = new ListEventsUseCase(repository);
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const repository = new EventRepositoryPrisma();
 
-    const result = await usecase.execute();
+      const page = Number(req.query.page ?? 1);
+      const limit = Number(req.query.limit ?? 5);
 
-    return res.jsonSuccess(result);
-  } catch (error) {
-    next(error);
-  }
-};
+      const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
+      const safeLimit = Number.isNaN(limit) || limit < 1 ? 5 : limit;
+
+      const result = await repository.findPaginated(safePage, safeLimit);
+
+      return res.jsonSuccess(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 
 export const getEventById = async (
   req: Request,

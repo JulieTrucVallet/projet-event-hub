@@ -4,8 +4,13 @@ import type { IUserService } from "../services/user.service";
 type LoginOkData = {
   requires2fa: boolean;
   pendingToken?: string;
-  accessToken?: string;
-  user?: { email: string; id?: string };
+  user?: {
+    email: string;
+    id?: string;
+    firstname?: string;
+    lastname?: string;
+    otpEnabled?: boolean;
+  };
 };
 
 export function useLoginPresenter(userService: IUserService) {
@@ -52,9 +57,8 @@ export function useLoginPresenter(userService: IUserService) {
 
     requires2fa: data?.requires2fa ?? false,
     pendingToken: data?.pendingToken,
-    accessToken: data?.accessToken,
     user: data?.user,
-    isLoggedIn: Boolean(data && !data.requires2fa && data.accessToken),
+    isLoggedIn: Boolean(data && !data.requires2fa),
     is2faPending: Boolean(data && data.requires2fa && data.pendingToken),
   };
 }

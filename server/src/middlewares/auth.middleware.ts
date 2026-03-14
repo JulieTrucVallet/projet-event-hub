@@ -10,13 +10,11 @@ declare global {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const auth = req.headers.authorization;
+  const token = req.cookies?.accessToken;
 
-  if (!auth || !auth.startsWith("Bearer ")) {
-    return res.jsonError("Missing Authorization bearer token", 401);
+  if (!token) {
+    return res.jsonError("Unauthorized", 401);
   }
-
-  const token = auth.slice("Bearer ".length).trim();
 
   try {
     const userId = verifyAccessToken(token);

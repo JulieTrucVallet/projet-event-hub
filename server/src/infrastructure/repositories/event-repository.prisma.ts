@@ -69,6 +69,51 @@ export class EventRepositoryPrisma implements IEventRepository {
     );
   }
 
+  async findPaginated(page: number, limit: number): Promise<{
+    items: Event[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * limit;
+
+    const [events, total] = await Promise.all([
+      prisma.event.findMany({
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.event.count(),
+    ]);
+
+    const items = events.map((e) =>
+      Event.create({
+        id: e.id,
+        title: e.title,
+        startDate: e.startDate,
+        venueId: e.venueId,
+        capacity: e.capacity,
+        organizerId: e.organizerId,
+        categoryId: e.categoryId,
+        createdAt: e.createdAt,
+        updatedAt: e.updatedAt,
+
+        ...(e.description !== null ? { description: e.description } : {}),
+        ...(e.price !== null ? { price: e.price } : {}),
+        ...(e.imageUrl !== null ? { imageUrl: e.imageUrl } : {}),
+      })
+    );
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async findById(id: string): Promise<Event | null> {
     const e = await prisma.event.findUnique({
       where: { id },
