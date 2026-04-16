@@ -24,7 +24,7 @@ export type PaginatedEventsResponse = {
 };
 
 export class EventsService {
-  private baseUrl = "http://localhost:8001/api/v1";
+  private baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8001/api/v1";
 
   async getPaginatedEvents(page: number, limit: number): Promise<PaginatedEventsResponse> {
     const response = await fetch(`${this.baseUrl}/events?page=${page}&limit=${limit}`);
