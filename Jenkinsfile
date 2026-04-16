@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node20'
+    }
+
     stages {
         stage('Install frontend') {
             steps {
@@ -29,7 +33,7 @@ pipeline {
         stage('Test backend') {
             steps {
                 dir('server') {
-                    sh 'npm run test:unit'
+                    sh 'npm test'
                 }
             }
         }
