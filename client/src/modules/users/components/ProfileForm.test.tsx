@@ -6,19 +6,19 @@ import { ProfileForm } from "./ProfileForm";
 
 describe("ProfileForm", () => {
   beforeEach(() => {
-    localStorage.clear();
+  window.localStorage.clear();
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: "u1",
-        firstname: "Julie",
-        lastname: "TV",
-        email: "julie@mail.com",
-        otpEnabled: false,
-      })
-    );
-  });
+  window.localStorage.setItem(
+    "user",
+    JSON.stringify({
+      id: "u1",
+      firstname: "Julie",
+      lastname: "TV",
+      email: "julie@mail.com",
+      otpEnabled: false,
+    })
+  );
+});
 
   it("Affiche les infos initiales", () => {
     renderWithStore(<ProfileForm />);
