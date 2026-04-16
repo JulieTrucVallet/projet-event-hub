@@ -1,3 +1,5 @@
+export type EventStatus = "scheduled" | "cancelled";
+
 export interface EventProps {
   id: string;
   title: string;
@@ -9,6 +11,7 @@ export interface EventProps {
   organizerId: string;
   categoryId: string;
   imageUrl?: string;
+  status: EventStatus;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,10 +33,6 @@ export class Event {
       throw new Error("Event title cannot be empty");
     }
 
-    if (props.startDate <= new Date()) {
-      throw new Error("Event start date must be in the future");
-    }
-
     if (!props.venueId) {
       throw new Error("Event venue is required");
     }
@@ -53,6 +52,27 @@ export class Event {
     if (props.price !== undefined && props.price < 0) {
       throw new Error("Event price must be a positive number");
     }
+
+    if (!props.status) {
+      throw new Error("Event status is required");
+    }
+  }
+
+  cancel(organizerId: string): void {
+    if (this.props.organizerId !== organizerId) {
+      throw new Error("Only the organizer can cancel this event");
+    }
+
+    if (this.props.status === "cancelled") {
+      throw new Error("Event is already cancelled");
+    }
+
+    if (this.props.startDate < new Date()) {
+      throw new Error("Cannot cancel a past event");
+    }
+
+    this.props.status = "cancelled";
+    this.props.updatedAt = new Date();
   }
 
   get id() {
@@ -93,6 +113,10 @@ export class Event {
 
   get imageUrl() {
     return this.props.imageUrl;
+  }
+
+  get status() {
+    return this.props.status;
   }
 
   get createdAt() {

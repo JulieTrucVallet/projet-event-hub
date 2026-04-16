@@ -13,10 +13,17 @@ export class UpdateEventUseCase {
   constructor(private readonly eventRepository: IEventRepository) {}
 
   async execute(id: string, payload: UpdateEventPayload) {
+    const startDate =
+      payload.startDate !== undefined ? new Date(payload.startDate) : undefined;
+
+    if (startDate !== undefined && startDate <= new Date()) {
+      throw new Error("Event start date must be in the future");
+    }
+
     const data = {
       ...(payload.title !== undefined ? { title: payload.title } : {}),
       ...(payload.description !== undefined ? { description: payload.description } : {}),
-      ...(payload.startDate !== undefined ? { startDate: new Date(payload.startDate) } : {}),
+      ...(startDate !== undefined ? { startDate } : {}),
       ...(payload.capacity !== undefined ? { capacity: payload.capacity } : {}),
       ...(payload.price !== undefined ? { price: payload.price } : {}),
       ...(payload.imageUrl !== undefined ? { imageUrl: payload.imageUrl } : {}),

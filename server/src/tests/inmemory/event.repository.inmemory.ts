@@ -1,5 +1,5 @@
-import { Event } from "../../src/domain/entities/event.entity";
-import type { IEventRepository } from "../../src/domain/interfaces/event-repository.interface";
+import { Event } from "../../domain/entities/event.entity";
+import type { IEventRepository } from "../../domain/interfaces/event-repository.interface";
 
 export class EventRepositoryInMemory implements IEventRepository {
   public events: Event[] = [];

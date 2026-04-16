@@ -1,4 +1,4 @@
-import { CreateEventUseCase } from "../src/application/usecases/create-event.usecase";
+import { CreateEventUseCase } from "../application/usecases/create-event.usecase";
 import { EventRepositoryInMemory } from "./inmemory/event.repository.inmemory";
 
 describe("CreateEventUseCase", () => {

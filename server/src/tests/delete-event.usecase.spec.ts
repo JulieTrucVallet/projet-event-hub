@@ -1,5 +1,5 @@
-import { CreateEventUseCase } from "../src/application/usecases/create-event.usecase";
-import { DeleteEventUseCase } from "../src/application/usecases/delete-event.usecase";
+import { CreateEventUseCase } from "../application/usecases/create-event.usecase";
+import { DeleteEventUseCase } from "../application/usecases/delete-event.usecase";
 import { EventRepositoryInMemory } from "./inmemory/event.repository.inmemory";
 
 describe("DeleteEventUseCase", () => {
