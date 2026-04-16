@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/JulieTrucVallet/projet-event-hub.git'
-            }
-        }
-
         stage('Install frontend') {
             steps {
                 dir('client') {
