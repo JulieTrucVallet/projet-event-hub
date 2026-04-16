@@ -6,19 +6,36 @@ import { ProfileForm } from "./ProfileForm";
 
 describe("ProfileForm", () => {
   beforeEach(() => {
-  window.localStorage.clear();
+    const storage: Record<string, string> = {};
 
-  window.localStorage.setItem(
-    "user",
-    JSON.stringify({
-      id: "u1",
-      firstname: "Julie",
-      lastname: "TV",
-      email: "julie@mail.com",
-      otpEnabled: false,
-    })
-  );
-});
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: (key: string) => storage[key] ?? null,
+        setItem: (key: string, value: string) => {
+          storage[key] = value;
+        },
+        removeItem: (key: string) => {
+          delete storage[key];
+        },
+        clear: () => {
+          Object.keys(storage).forEach((key) => delete storage[key]);
+        },
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: "u1",
+        firstname: "Julie",
+        lastname: "TV",
+        email: "julie@mail.com",
+        otpEnabled: false,
+      })
+    );
+  });
 
   it("Affiche les infos initiales", () => {
     renderWithStore(<ProfileForm />);
