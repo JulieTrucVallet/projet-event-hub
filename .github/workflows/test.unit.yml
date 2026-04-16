@@ -1,0 +1,54 @@
+name: Unit Tests
+
+on:
+  workflow_call:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      JWT_SECRET: test_secret
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+
+      # -----------------
+      # FRONT LINT
+      # -----------------
+      - name: Install frontend deps
+        working-directory: ./client
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: ./client
+        run: npm run lint
+
+      # -----------------
+      # BACKEND TESTS
+      # -----------------
+      - name: Install backend deps
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run backend unit tests
+        working-directory: ./server
+        run: npm run test:unit
+
+      # -----------------
+      # FRONT TESTS
+      # -----------------
+      - name: Run frontend tests
+        working-directory: ./client
+        run: npm run test:ci

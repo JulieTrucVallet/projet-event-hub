@@ -1,0 +1,34 @@
+name: E2E Tests
+
+on:
+  workflow_call:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      JWT_SECRET: test_secret
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install backend deps
+        working-directory: ./server
+        run: npm ci
+
+      - name: Verify Docker
+        run: docker info
+
+      - name: Run E2E tests
+        working-directory: ./server
+        run: npm run test:e2e
