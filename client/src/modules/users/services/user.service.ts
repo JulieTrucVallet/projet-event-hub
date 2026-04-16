@@ -15,6 +15,20 @@ type LoginApiData =
       };
     };
 
+export type RegisterPayload = {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+};
+
+export type RegisterApiData = {
+  id?: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+};
+
 export type MeApiData = {
   id: string;
   firstname: string;
@@ -45,18 +59,14 @@ export type Disable2faApiData = {
 };
 
 export interface IUserService {
-  register(payload: any): Promise<ApiResult<any>>;
+  register(payload: RegisterPayload): Promise<ApiResult<RegisterApiData>>;
   login(payload: { email: string; password: string }): Promise<ApiResult<LoginApiData>>;
   updateProfile(payload: { firstname?: string; lastname?: string; email?: string }): Promise<ApiResult<MeApiData>>;
-
   init2fa(payload: { userId: string }): Promise<ApiResult<Init2faApiData>>;
   confirm2fa(payload: { userId: string; token: string }): Promise<ApiResult<Confirm2faApiData>>;
-
   verify2fa(payload: { pendingToken: string; token: string }): Promise<ApiResult<Verify2faApiData>>;
   backup2fa(payload: { pendingToken: string; code: string }): Promise<ApiResult<Backup2faApiData>>;
-
   disable2fa(payload: { userId: string }): Promise<ApiResult<Disable2faApiData>>;
-
   getMe(): Promise<ApiResult<MeApiData>>;
 }
 
@@ -84,7 +94,7 @@ export class UserService implements IUserService {
     }
   }
 
-  async register(payload: any): Promise<ApiResult<any>> {
+  async register(payload: RegisterPayload): Promise<ApiResult<RegisterApiData>> {
     try {
       const res = await fetch(`${this.baseUrl}/auth/register`, {
         method: "POST",
@@ -99,7 +109,7 @@ export class UserService implements IUserService {
         return { ok: false, message: json?.error?.message ?? "Register failed" };
       }
 
-      return { ok: true, data: json.data };
+      return { ok: true, data: json.data as RegisterApiData };
     } catch {
       return { ok: false, message: "Impossible de contacter l'API" };
     }

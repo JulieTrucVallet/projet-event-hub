@@ -1,12 +1,12 @@
 import {
-    Alert,
-    Box,
-    Card,
-    CardContent,
-    CircularProgress,
-    List,
-    ListItem,
-    Typography,
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  List,
+  ListItem,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { DashboardService, type DashboardData } from "../services/dashboard.service";
@@ -26,8 +26,8 @@ const DashboardPage: React.FC = () => {
 
         const result = await dashboardService.getStats();
         setData(result);
-      } catch (e: any) {
-        setError(e?.message ?? "Erreur lors du chargement du dashboard");
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "Erreur lors du chargement du dashboard");
       } finally {
         setLoading(false);
       }

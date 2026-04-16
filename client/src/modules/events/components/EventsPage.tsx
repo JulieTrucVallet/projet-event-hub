@@ -1,11 +1,11 @@
 import {
-    Alert,
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CircularProgress,
-    Typography,
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { EventsService, type PaginatedEventsResponse } from "../services/events.service";
@@ -28,8 +28,8 @@ const EventsPage: React.FC = () => {
 
         const result = await eventsService.getPaginatedEvents(page, limit);
         setData(result);
-      } catch (e: any) {
-        setError(e?.message ?? "Erreur lors du chargement des événements");
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "Erreur lors du chargement des événements");
       } finally {
         setLoading(false);
       }

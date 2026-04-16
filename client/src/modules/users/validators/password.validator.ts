@@ -3,7 +3,7 @@ export type PasswordValidationResult = {
   errors: string[];
 };
 
-const SPECIAL_CHARS_REGEX = /[+=%#\/ *!?.,]/;
+const SPECIAL_CHARS_REGEX = /[+=%#/ *!?.,]/;
 
 export function validatePassword(password: string): PasswordValidationResult {
   const errors: string[] = [];

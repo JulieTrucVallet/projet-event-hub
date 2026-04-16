@@ -9,12 +9,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfilePresenter } from "../hooks/useProfilePresenter";
 import { UserService } from "../services/user.service";
 
 const userService = new UserService();
+
+type StoredUser = {
+  id?: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  otpEnabled?: boolean;
+};
 
 export const ProfileForm: React.FC = () => {
   const navigate = useNavigate();
@@ -34,38 +42,43 @@ export const ProfileForm: React.FC = () => {
   const [disableError, setDisableError] = useState<string | null>(null);
 
   const stored = localStorage.getItem("user");
-  const initialProfile = stored
-    ? JSON.parse(stored)
-    : { firstname: "", lastname: "", email: "", otpEnabled: false };
 
-  if (!stored) {
-    navigate("/login", { replace: true });
-    return null;
-  }
+  const parsedUser: StoredUser | null = useMemo(() => {
+    if (!stored) return null;
+
+    try {
+      return JSON.parse(stored) as StoredUser;
+    } catch {
+      return null;
+    }
+  }, [stored]);
+
+  const initialProfile = {
+    firstname: parsedUser?.firstname ?? "",
+    lastname: parsedUser?.lastname ?? "",
+    email: parsedUser?.email ?? "",
+    otpEnabled: parsedUser?.otpEnabled ?? false,
+  };
 
   const presenter = useProfilePresenter(userService, initialProfile);
 
   const is2faEnabled = useMemo(() => {
-    try {
-      const raw = localStorage.getItem("user");
-      if (!raw) return false;
-      const u = JSON.parse(raw);
-      return !!u?.otpEnabled;
-    } catch {
-      return false;
-    }
-  }, [openBackupModal, openDisableModal, presenter.success]);
+    return !!parsedUser?.otpEnabled;
+  }, [parsedUser]);
 
   const getUserId = (): string | null => {
-    try {
-      const raw = localStorage.getItem("user");
-      if (!raw) return null;
-      const u = JSON.parse(raw);
-      return u?.id ?? null;
-    } catch {
-      return null;
-    }
+    return parsedUser?.id ?? null;
   };
+
+  useEffect(() => {
+    if (!stored || !parsedUser) {
+      navigate("/login", { replace: true });
+    }
+  }, [stored, parsedUser, navigate]);
+
+  if (!stored || !parsedUser) {
+    return null;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("pendingToken");
@@ -101,8 +114,8 @@ export const ProfileForm: React.FC = () => {
       }
 
       setQr(result.data.qrCodeDataUrl);
-    } catch (e: any) {
-      setTwoFaError(e?.message ?? "Erreur lors de l'initialisation 2FA.");
+    } catch (e: unknown) {
+      setTwoFaError(e instanceof Error ? e.message : "Erreur lors de l'initialisation 2FA.");
     } finally {
       setLoading2fa(false);
     }
@@ -141,8 +154,8 @@ export const ProfileForm: React.FC = () => {
 
       setOpen2fa(false);
       setOpenBackupModal(true);
-    } catch (e: any) {
-      setTwoFaError(e?.message ?? "Erreur lors de l'activation 2FA.");
+    } catch (e: unknown) {
+      setTwoFaError(e instanceof Error ? e.message : "Erreur lors de l'activation 2FA.");
     } finally {
       setActivating2fa(false);
     }
@@ -186,8 +199,8 @@ export const ProfileForm: React.FC = () => {
       }
 
       setOpenDisableModal(false);
-    } catch (e: any) {
-      setDisableError(e?.message ?? "Erreur lors de la désactivation 2FA.");
+    } catch (e: unknown) {
+      setDisableError(e instanceof Error ? e.message : "Erreur lors de la désactivation 2FA.");
     } finally {
       setDisabling2fa(false);
     }

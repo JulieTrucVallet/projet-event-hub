@@ -103,8 +103,8 @@ export const TwoFaForm: React.FC = () => {
       }
 
       await goToProfile();
-    } catch (e: any) {
-      setError(e?.message ?? "Erreur lors de la vérification 2FA.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Erreur lors de la vérification 2FA.");
     } finally {
       setSubmitting(false);
     }
@@ -141,8 +141,8 @@ export const TwoFaForm: React.FC = () => {
       setBackupCode("");
 
       await goToProfile();
-    } catch (e: any) {
-      setError(e?.message ?? "Erreur lors de la connexion via code de secours.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Erreur lors de la connexion via code de secours.");
     } finally {
       setBackupSubmitting(false);
     }
@@ -168,8 +168,8 @@ export const TwoFaForm: React.FC = () => {
               component="input"
               id={`otp-${i}`}
               value={d}
-              onChange={(e: any) => setDigitAt(i, e.target.value)}
-              onKeyDown={(e: any) => onKeyDown(i, e)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDigitAt(i, e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => onKeyDown(i, e)}
               inputMode="numeric"
               style={{
                 width: 44,

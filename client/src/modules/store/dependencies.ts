@@ -1,1 +1,1 @@
-export type Dependencies = {};
+export type Dependencies = object;
