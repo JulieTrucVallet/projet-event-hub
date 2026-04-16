@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "./client";
+import { disconnectPrismaClient, getPrismaClient } from "../prisma/client";
 
 async function main() {
+  const prisma = getPrismaClient();
   const passwordHash = await bcrypt.hash("123456", 10);
 
   const user = await prisma.user.upsert({
@@ -92,6 +93,7 @@ async function main() {
         organizerId: user.id,
         categoryId: musicCategory.id,
         venueId: venue.id,
+        status: "scheduled",
       },
       {
         id: uuidv4(),
@@ -103,6 +105,7 @@ async function main() {
         organizerId: user.id,
         categoryId: musicCategory.id,
         venueId: venue.id,
+        status: "scheduled",
       },
       {
         id: uuidv4(),
@@ -114,6 +117,7 @@ async function main() {
         organizerId: user.id,
         categoryId: techCategory.id,
         venueId: venue.id,
+        status: "scheduled",
       },
       {
         id: uuidv4(),
@@ -125,6 +129,7 @@ async function main() {
         organizerId: user.id,
         categoryId: techCategory.id,
         venueId: venue.id,
+        status: "scheduled",
       },
       {
         id: uuidv4(),
@@ -136,6 +141,7 @@ async function main() {
         organizerId: user.id,
         categoryId: techCategory.id,
         venueId: venue.id,
+        status: "scheduled",
       },
       {
         id: uuidv4(),
@@ -147,6 +153,7 @@ async function main() {
         organizerId: user.id,
         categoryId: sportCategory.id,
         venueId: venue.id,
+        status: "scheduled",
       },
     ],
   });
@@ -163,5 +170,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await disconnectPrismaClient();
   });

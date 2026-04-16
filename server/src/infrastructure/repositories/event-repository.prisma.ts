@@ -1,9 +1,11 @@
 import { Event } from "../../domain/entities/event.entity";
 import { IEventRepository } from "../../domain/interfaces/event-repository.interface";
-import { prisma } from "../../prisma/client";
+import { getPrismaClient } from "../../prisma/client";
 
 export class EventRepositoryPrisma implements IEventRepository {
   async save(event: Event): Promise<Event> {
+    const prisma = getPrismaClient();
+
     const created = await prisma.event.create({
       data: {
         id: event.props.id,
@@ -13,11 +15,11 @@ export class EventRepositoryPrisma implements IEventRepository {
         organizerId: event.props.organizerId,
         categoryId: event.props.categoryId,
         venueId: event.props.venueId,
-
+        status: event.props.status,
         ...(event.props.description !== undefined ? { description: event.props.description } : {}),
         ...(event.props.price !== undefined ? { price: event.props.price } : {}),
         ...(event.props.imageUrl !== undefined ? { imageUrl: event.props.imageUrl } : {}),
-        },
+      },
     });
 
     return Event.create({
@@ -30,7 +32,7 @@ export class EventRepositoryPrisma implements IEventRepository {
       categoryId: created.categoryId,
       createdAt: created.createdAt,
       updatedAt: created.updatedAt,
-
+      status: created.status,
       ...(created.description !== null ? { description: created.description } : {}),
       ...(created.price !== null ? { price: created.price } : {}),
       ...(created.imageUrl !== null ? { imageUrl: created.imageUrl } : {}),
@@ -38,14 +40,19 @@ export class EventRepositoryPrisma implements IEventRepository {
   }
 
   async categoryExists(categoryId: string): Promise<boolean> {
+    const prisma = getPrismaClient();
+
     const found = await prisma.category.findUnique({
       where: { id: categoryId },
       select: { id: true },
     });
+
     return !!found;
   }
 
   async findAll(): Promise<Event[]> {
+    const prisma = getPrismaClient();
+
     const events = await prisma.event.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -61,7 +68,7 @@ export class EventRepositoryPrisma implements IEventRepository {
         categoryId: e.categoryId,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
-
+        status: e.status,
         ...(e.description !== null ? { description: e.description } : {}),
         ...(e.price !== null ? { price: e.price } : {}),
         ...(e.imageUrl !== null ? { imageUrl: e.imageUrl } : {}),
@@ -69,13 +76,17 @@ export class EventRepositoryPrisma implements IEventRepository {
     );
   }
 
-  async findPaginated(page: number, limit: number): Promise<{
+  async findPaginated(
+    page: number,
+    limit: number
+  ): Promise<{
     items: Event[];
     total: number;
     page: number;
     limit: number;
     totalPages: number;
   }> {
+    const prisma = getPrismaClient();
     const skip = (page - 1) * limit;
 
     const [events, total] = await Promise.all([
@@ -98,7 +109,7 @@ export class EventRepositoryPrisma implements IEventRepository {
         categoryId: e.categoryId,
         createdAt: e.createdAt,
         updatedAt: e.updatedAt,
-
+        status: e.status,
         ...(e.description !== null ? { description: e.description } : {}),
         ...(e.price !== null ? { price: e.price } : {}),
         ...(e.imageUrl !== null ? { imageUrl: e.imageUrl } : {}),
@@ -115,31 +126,39 @@ export class EventRepositoryPrisma implements IEventRepository {
   }
 
   async findById(id: string): Promise<Event | null> {
+    const prisma = getPrismaClient();
+
     const e = await prisma.event.findUnique({
       where: { id },
     });
 
     if (!e) return null;
 
-      return Event.create({
-        id: e.id,
-        title: e.title,
-        startDate: e.startDate,
-        venueId: e.venueId,
-        capacity: e.capacity,
-        organizerId: e.organizerId,
-        categoryId: e.categoryId,
-        createdAt: e.createdAt,
-        updatedAt: e.updatedAt,
-
-        ...(e.description !== null ? { description: e.description } : {}),
-        ...(e.price !== null ? { price: e.price } : {}),
-        ...(e.imageUrl !== null ? { imageUrl: e.imageUrl } : {}),
-      });
+    return Event.create({
+      id: e.id,
+      title: e.title,
+      startDate: e.startDate,
+      venueId: e.venueId,
+      capacity: e.capacity,
+      organizerId: e.organizerId,
+      categoryId: e.categoryId,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+      status: e.status,
+      ...(e.description !== null ? { description: e.description } : {}),
+      ...(e.price !== null ? { price: e.price } : {}),
+      ...(e.imageUrl !== null ? { imageUrl: e.imageUrl } : {}),
+    });
   }
 
   async deleteById(id: string): Promise<boolean> {
-    const found = await prisma.event.findUnique({ where: { id }, select: { id: true } });
+    const prisma = getPrismaClient();
+
+    const found = await prisma.event.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
     if (!found) return false;
 
     await prisma.event.delete({ where: { id } });
@@ -157,6 +176,8 @@ export class EventRepositoryPrisma implements IEventRepository {
       imageUrl?: string;
     }
   ): Promise<Event | null> {
+    const prisma = getPrismaClient();
+
     const existing = await prisma.event.findUnique({ where: { id } });
     if (!existing) return null;
 
@@ -182,7 +203,7 @@ export class EventRepositoryPrisma implements IEventRepository {
       categoryId: updated.categoryId,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
-
+      status: updated.status,
       ...(updated.description !== null ? { description: updated.description } : {}),
       ...(updated.price !== null ? { price: updated.price } : {}),
       ...(updated.imageUrl !== null ? { imageUrl: updated.imageUrl } : {}),

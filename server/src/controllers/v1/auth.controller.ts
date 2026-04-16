@@ -16,7 +16,7 @@ import {
   signAccessToken,
   signPending2faToken,
   verifyPending2faToken,
-} from "../../utility/jwt.js";
+} from "../../utility/jwt";
 
 function setAccessTokenCookie(res: Response, token: string) {
   res.cookie("accessToken", token, {

@@ -1,9 +1,11 @@
 import { User } from "../../domain/entities/user.entity";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
-import { prisma } from "../../prisma/client";
+import { getPrismaClient } from "../../prisma/client";
 
 export class UserRepositoryPrisma implements IUserRepository {
   async save(user: User): Promise<User> {
+    const prisma = getPrismaClient();
+
     const created = await prisma.user.create({
       data: {
         ...(user.props.id ? { id: user.props.id } : {}),
@@ -30,6 +32,8 @@ export class UserRepositoryPrisma implements IUserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
+    const prisma = getPrismaClient();
+
     const u = await prisma.user.findUnique({ where: { id } });
     if (!u) return null;
 
@@ -47,6 +51,7 @@ export class UserRepositoryPrisma implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
+    const prisma = getPrismaClient();
     const normalized = email.trim().toLowerCase();
 
     const u = await prisma.user.findUnique({
@@ -78,6 +83,8 @@ export class UserRepositoryPrisma implements IUserRepository {
       otpSecret?: string | null;
     }
   ): Promise<User | null> {
+    const prisma = getPrismaClient();
+
     const existing = await prisma.user.findUnique({ where: { id } });
     if (!existing) return null;
 
@@ -107,6 +114,8 @@ export class UserRepositoryPrisma implements IUserRepository {
   }
 
   async setOtpSecret(userId: string, secret: string | null): Promise<void> {
+    const prisma = getPrismaClient();
+
     await prisma.user.update({
       where: { id: userId },
       data: { otpSecret: secret },
@@ -114,10 +123,11 @@ export class UserRepositoryPrisma implements IUserRepository {
   }
 
   async setOtpEnabled(userId: string, enabled: boolean): Promise<void> {
+    const prisma = getPrismaClient();
+
     await prisma.user.update({
       where: { id: userId },
       data: { otpEnabled: enabled },
     });
   }
-
 }

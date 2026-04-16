@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client";
+import { getPrismaClient } from "../../prisma/client";
 
 export type DashboardStats = {
   totals: {
@@ -21,6 +21,7 @@ export type DashboardStats = {
 
 export class GetDashboardStatsUseCase {
   async execute(): Promise<DashboardStats> {
+    const prisma = getPrismaClient();
     const now = new Date();
 
     const [

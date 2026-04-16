@@ -1,13 +1,17 @@
-import { prisma } from "../../prisma/client";
+import { getPrismaClient } from "../../prisma/client";
 
 export class OtpBackupCodeRepositoryPrisma {
   async createMany(userId: string, codeHashes: string[]) {
+    const prisma = getPrismaClient();
+
     await prisma.otpBackupCode.createMany({
       data: codeHashes.map((codeHash) => ({ userId, codeHash })),
     });
   }
 
   async findUnusedByUserId(userId: string) {
+    const prisma = getPrismaClient();
+
     return prisma.otpBackupCode.findMany({
       where: { userId, usedAt: null },
       select: { id: true, codeHash: true },
@@ -15,6 +19,8 @@ export class OtpBackupCodeRepositoryPrisma {
   }
 
   async markUsed(id: string) {
+    const prisma = getPrismaClient();
+
     await prisma.otpBackupCode.update({
       where: { id },
       data: { usedAt: new Date() },
@@ -22,6 +28,10 @@ export class OtpBackupCodeRepositoryPrisma {
   }
 
   async deleteAllForUser(userId: string) {
-    await prisma.otpBackupCode.deleteMany({ where: { userId } });
+    const prisma = getPrismaClient();
+
+    await prisma.otpBackupCode.deleteMany({
+      where: { userId },
+    });
   }
 }
