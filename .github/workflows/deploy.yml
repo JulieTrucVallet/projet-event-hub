@@ -64,6 +64,5 @@ jobs:
             DATABASE_URL=postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@postgres:5432/${{ secrets.DB_NAME }}
             EOF
 
-            docker compose -f server/docker-compose.yml down
-            docker compose -f server/docker-compose.yml build
-            docker compose -f server/docker-compose.yml up -d
+            docker-compose -f server/docker-compose.yml down
+            docker-compose -f server/docker-compose.yml up -d --build
