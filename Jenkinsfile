@@ -5,37 +5,89 @@ pipeline {
         nodejs 'node20'
     }
 
+    environment {
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
     stages {
-        stage('Install frontend') {
+        stage('Install Dependencies') {
+            parallel {
+                stage('Frontend Deps') {
+                    steps {
+                        dir('client') {
+                            sh 'npm ci'
+                        }
+                    }
+                }
+                stage('Backend Deps') {
+                    steps {
+                        dir('server') {
+                            sh 'npm ci'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Tests') {
+            parallel {
+                stage('Frontend Tests') {
+                    steps {
+                        dir('client') {
+                            sh 'npm run test:ci'
+                        }
+                    }
+                }
+                stage('Backend Unit Tests') {
+                    steps {
+                        dir('server') {
+                            sh 'npm test'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build Frontend') {
             steps {
                 dir('client') {
-                    sh 'npm ci'
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Test frontend') {
-            steps {
-                dir('client') {
-                    sh 'npm run test:ci'
-                }
-            }
-        }
-
-        stage('Install backend') {
+        stage('Docker Build') {
             steps {
                 dir('server') {
-                    sh 'npm ci'
+                    sh 'docker compose build'
                 }
             }
         }
 
-        stage('Test backend') {
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
                 dir('server') {
-                    sh 'npm test'
+                    sh '''
+                    docker compose down || true
+                    docker compose up -d --build
+                    '''
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline EventHub réussi !'
+        }
+        failure {
+            echo 'Le pipeline EventHub a échoué.'
+        }
+        always {
+            sh 'docker system prune -f || true'
         }
     }
 }
