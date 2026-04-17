@@ -52,7 +52,6 @@ describe("POST /api/v1/auth/login", () => {
       })
     );
 
-    // ✅ vérifie le cookie JWT
     expect(res.headers["set-cookie"]).toBeDefined();
   });
 
